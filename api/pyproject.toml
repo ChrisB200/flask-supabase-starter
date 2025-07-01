@@ -1,0 +1,35 @@
+[project]
+name = "flask-starter-kit"
+version = "0.1.0"
+description = "A beginner starter kit for making a flask app"
+authors = [
+    {name = "Christopher Bonner",email = "cbonner.dev@outlook.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13,<4.0"
+dependencies = [
+    "flask (>=3.1.1,<4.0.0)",
+    "flask-cors (>=6.0.1,<7.0.0)",
+    "flask-bcrypt (>=1.0.1,<2.0.0)",
+    "flask-session (>=0.8.0,<0.9.0)",
+    "dotenv (>=0.9.9,<0.10.0)",
+    "redis (>=6.2.0,<7.0.0)",
+    "flask-sqlalchemy (>=3.1.1,<4.0.0)",
+    "python-dotenv (>=1.1.1,<2.0.0)",
+    "psycopg2-binary (>=2.9.10,<3.0.0)",
+    "supabase (>=2.16.0,<3.0.0)",
+    "pyjwt (>=2.10.1,<3.0.0)",
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+package-mode = false
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+addopts = "--import-mode=importlib"
+
