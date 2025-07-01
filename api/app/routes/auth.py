@@ -28,18 +28,25 @@ def signup():
     if account:
         raise AppError("Account already exists", 409)
 
-    response = supabase.auth.sign_up({
-        "email": email,
-        "password": password
-    })
+    try:
+        response = supabase.auth.sign_up({
+            "email": email,
+            "password": password
+        })
 
-    account = Account(username=username, user_id=response.user.id)
-    db.session.add(account)
-    db.session.commit()
+        account = Account(username=username, user_id=response.user.id)
+        db.session.add(account)
+        db.session.commit()
 
-    verify_token = generate_verify_token(email)
+        verify_token = generate_verify_token(email)
 
-    return jsonify(verify_token=verify_token, account=account.to_json()), 200
+        return jsonify(verify_token=verify_token, account=account.to_json()), 200
+    except AuthApiError as e:
+        db.session.rollback()
+        raise AppError(e.message)
+    except Exception as e:
+        db.session.rollback()
+        raise e
 
 
 @auth_bp.route("/login", methods=["POST"])
@@ -54,17 +61,19 @@ def login():
             "email": email,
             "password": password,
         })
+
+        access_token = response.session.access_token
+        refresh_token = response.session.refresh_token
+
+        session["refresh_token"] = refresh_token
+
+        return jsonify(access_token=access_token)
     except AuthApiError as e:
         if e.message == "Email not confirmed":
             verify_token = generate_verify_token(email)
             return jsonify(verify_token=verify_token), 200
 
-    access_token = response.session.access_token
-    refresh_token = response.session.refresh_token
-
-    session["refresh_token"] = refresh_token
-
-    return jsonify(access_token=access_token)
+        raise AppError(e.message, 401)
 
 
 @auth_bp.route("/code/verify", methods=["POST"])
