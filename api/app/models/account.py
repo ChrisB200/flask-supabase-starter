@@ -1,11 +1,12 @@
-from app.config.db import db, get_uuid
+from app.config.db import db
+from uuid import uuid4
 
 
 class Account(db.Model):
     __tablename__ = "accounts"
     __table_args__ = {"schema": "public"}
-    id = db.Column(db.UUID, primary_key=True, unique=True, default=get_uuid())
-    username = db.Column(db.VARCHAR, unique=True)
+    id = db.Column(db.UUID, primary_key=True, unique=True, default=uuid4)
+    name = db.Column(db.VARCHAR)
     user_id = db.Column(db.UUID, db.ForeignKey(
         "auth.users.id"), nullable=False)
 
@@ -15,6 +16,6 @@ class Account(db.Model):
     def to_json(self):
         return {
             "id": self.id,
-            "username": self.username,
+            "name": self.name,
             "user_id": self.user_id
         }

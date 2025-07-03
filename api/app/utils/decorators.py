@@ -24,7 +24,7 @@ def login_required(f):
             return redirect(url_for("routes.auth.refresh_tokens"))
 
         user_id = response.user.id
-        account = Account.query.filter_by(user_id=user_id).first()
+        account: Account = Account.query.filter_by(user_id=user_id).first()
         if not account:
             raise AppError("Account could not be found", 401)
 

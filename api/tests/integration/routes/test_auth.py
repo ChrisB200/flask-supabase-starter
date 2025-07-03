@@ -5,20 +5,18 @@ from app.config.db import db
 
 
 class TestSignup:
-    def remove_account(self, client: FlaskClient, email, username):
+    def remove_account(self, client: FlaskClient, email):
         # ensures that this account does not already exist
-        old_account = Account.query.filter_by(username=username).first()
+        old_account = User.query.filter_by(email=email).first()
         if (old_account):
             db.session.delete(old_account)
             db.session.commit()
 
     def test_success(self, client: FlaskClient):
         email = "example1@gmail.com"
-        username = "example1"
-        self.remove_account(client, email, username)
+        self.remove_account(client, email)
 
         res = client.post("/auth/signup", data={
-            "username": username,
             "email": email,
             "password": "passwordStrong1234!",
         })
@@ -33,7 +31,7 @@ class TestSignup:
         account = Account.query.filter_by(id=res.json["account"]["id"]).first()
         assert account, "Account does not exist in supabase"
 
-        self.remove_account(client, email, username)
+        self.remove_account(client, email)
 
     def test_invalid_input(self, client: FlaskClient):
         email = ""
@@ -54,11 +52,9 @@ class TestSignup:
 
     def test_account_exists(self, client: FlaskClient):
         email = "example1@gmail.com"
-        username = "example1"
-        self.remove_account(client, email, username)
+        self.remove_account(client, email)
 
         res1 = client.post("/auth/signup", data={
-            "username": username,
             "email": email,
             "password": "passwordStrong1234!",
         })
@@ -66,7 +62,6 @@ class TestSignup:
         assert res1.status_code == 200, "Signup failed"
 
         res2 = client.post("/auth/signup", data={
-            "username": username,
             "email": email,
             "password": "passwordStrong1234!",
         })
@@ -76,22 +71,21 @@ class TestSignup:
         assert res2.status_code != 200, "Account was created twice"
         assert res2.status_code == 409, "Status code should be 409"
 
-        self.remove_account(client, email, username)
+        self.remove_account(client, email)
 
 
 class TestLogin:
-    def remove_account(self, client: FlaskClient, username):
+    def remove_account(self, client: FlaskClient, email):
         # ensures that this account does not already exist
-        old_account = Account.query.filter_by(username=username).first()
+        old_account = User.query.filter_by(email=email).first()
         if (old_account):
             db.session.delete(old_account)
             db.session.commit()
 
-    def create_account(self, client, username, email, password):
-        self.remove_account(client, username)
+    def create_account(self, client, email, password):
+        self.remove_account(client, email)
 
         res1 = client.post("/auth/signup", data={
-            "username": username,
             "email": email,
             "password": "password",
         })

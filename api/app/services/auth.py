@@ -1,24 +1,10 @@
 from app.utils.exceptions import AppError
+from app.utils.constants import FRONTEND_URL
 from app.utils.jwt import decode_verify_token
+import json
 
 
-def validate_user_signup(username, email, password):
-    if not username:
-        raise AppError("Username not provided")
-
-    if len(username) > 15 or len(username) < 4:
-        raise AppError("Username must be between 4 and 15 characters")
-
-    if not email:
-        raise AppError("Email not provided")
-
-    if not password:
-        raise AppError("Password not provided")
-
-    return True
-
-
-def validate_user_login(email, password):
+def validate_user_credentials(email, password):
     if not email:
         raise AppError("Email not provided")
 
@@ -36,3 +22,21 @@ def decode_token(token):
     data = decode_verify_token(token)
 
     return data
+
+
+def oauth_to_frontend(access_token):
+    return f"""
+        <html>
+          <body>
+            <script>
+              window.opener.postMessage({json.dumps({
+        "type": "OAUTH_SUCCESS",
+                "data": {"access_token": access_token}
+    })}, "{FRONTEND_URL}");
+              window.close();
+            </script>
+            <p>Signing you in...</p>
+          </body>
+        </html>
+
+"""

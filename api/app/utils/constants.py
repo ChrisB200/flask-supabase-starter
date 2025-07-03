@@ -23,6 +23,7 @@ def get_env(key, fallback=None):
 # DEFINE ENVIRONMENT VARIABLES HERE
 SECRET_KEY = get_env("SECRET_KEY")
 ENVIRONMENT = get_env("ENVIRONMENT", "dev")
+FRONTEND_URL = get_env("FRONTEND_URL", "http://127.0.0.1:5173")
 
 # ----- MYSQL -----
 # INSTALL - poetry add pymysql

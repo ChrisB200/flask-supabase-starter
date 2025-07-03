@@ -24,11 +24,8 @@ def create_app(test_config=None):
     if test_config:
         app.config.update(test_config)
 
-    CORS(
-        app,
-        supports_credentials=True,
-        resources={r"/*": {"origins": "*"}}
-    )
+    CORS(app, origins=["http://localhost:5173",
+         "http://127.0.0.1:5173"], supports_credentials=True)
 
     Session(app)
 
