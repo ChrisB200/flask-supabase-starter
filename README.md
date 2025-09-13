@@ -1,4 +1,4 @@
-# Flask and Supabase Starter Kit
+# Flask and Supabase Template
 
 To get started you will need to install a few things
 
